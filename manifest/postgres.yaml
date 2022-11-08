@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-postgres
+  labels:
+    app: argocd-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-postgres
+  template:
+    metadata:
+      labels:
+        app: argocd-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: argocd-postgres
+spec:
+  selector:
+    app: argocd-postgres
+  type: NodePort
+  ports:
+    - name: http
+      port: 5432
+      targetPort: 5432
